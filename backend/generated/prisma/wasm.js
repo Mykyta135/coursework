@@ -182,7 +182,9 @@ exports.Prisma.UserScalarFieldEnum = {
   role: 'role',
   isVerified: 'isVerified',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  verificationToken: 'verificationToken',
+  verificationExpiry: 'verificationExpiry'
 };
 
 exports.Prisma.BookingScalarFieldEnum = {

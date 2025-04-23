@@ -1,11 +1,15 @@
 // src/modules/users/users.service.ts
 import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from 'src/jwt/jwt.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
   async findAll() {
     return this.prisma.user.findMany({
@@ -188,25 +192,31 @@ export class UsersService {
     const user = await this.prisma.user.findUnique({
       where: { email: credentials.email }
     });
-
+  
     if (!user) {
       throw new BadRequestException('Invalid email or password');
     }
-
+  
     // Verify password
     const passwordValid = await bcrypt.compare(credentials.password, user.passwordHash);
-
+  
     if (!passwordValid) {
       throw new BadRequestException('Invalid email or password');
     }
-
-    // In a real application, you would generate and return a JWT token here
-    // For this example, we'll just return the user object without sensitive fields
+  
+    // Generate JWT token
+    const token = this.jwtService.generateToken({
+      sub: user.id,
+      email: user.email,
+      role: user.role
+    });
+  
     return {
       id: user.id,
       email: user.email,
       role: user.role,
-      isVerified: user.isVerified
+      isVerified: user.isVerified,
+      token
     };
   }
   
@@ -235,11 +245,18 @@ export class UsersService {
 
     // In a real application, you would send a verification email here
 
+    const token = this.jwtService.generateToken({
+      sub: user.id,
+      email: user.email,
+      role: user.role
+    });
+  
     return {
       id: user.id,
       email: user.email,
       role: user.role,
-      isVerified: user.isVerified
+      isVerified: user.isVerified,
+      token
     };
   }
   

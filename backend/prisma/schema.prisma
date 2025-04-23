@@ -116,6 +116,8 @@ model User {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   
+  verificationToken  String?
+  verificationExpiry DateTime?
   // Relationships
   passenger       Passenger?
   bookings        Booking[]
