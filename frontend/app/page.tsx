@@ -1,98 +1,87 @@
-'use client'
-import Image from "next/image";
-import { useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import FlightSearchForm from "@/components/flight-search";
-import FlightResults from "@/components/flight-result";
+// app/page.tsx
+"use client";
 
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PopularRoutes } from "@/components/popular-routes";
+import { FlightAPI } from "@/lib/api-client";
+import { FlightSearchForm } from "@/components/flight-search";
+interface PopularRoute {
+  departureCode: string;
+  departureCity: string;
+  arrivalCode: string;
+  arrivalCity: string;
+  flightCount: number;
+}
 export default function Home() {
-  const searchParams = useSearchParams();
-  const isSearching = searchParams.has('from') && searchParams.has('to') && searchParams.has('date');
+  const [popularRoutes, setPopularRoutes] = useState<PopularRoute[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPopularRoutes = async () => {
+      try {
+        const routes = await FlightAPI.getPopularRoutes();
+        setPopularRoutes(routes);
+      } catch (error) {
+        console.error("Failed to fetch popular routes:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPopularRoutes();
+  }, []);
 
   return (
-    <main className="container mx-auto px-4 py-8">
-      <div className="mb-12 text-center">
-        <h1 className="text-4xl font-bold mb-4">Find Your Perfect Flight</h1>
-        <p className="text-lg text-muted-foreground">
-          Discover great deals on flights to destinations worldwide
-        </p>
+    <div className="relative">
+      {/* Hero section with background image */}
+      <div className="relative -z-1  h-[500px] bg-gradient-to-r from-blue-500 to-purple-600">
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="container relative z-10 mx-auto flex h-full flex-col items-center justify-center px-4 text-center text-white">
+          <h1 className="mb-4 text-4xl font-bold md:text-6xl">
+            Explore the World with SkyJet
+          </h1>
+          <p className="mb-8 max-w-2xl text-lg">
+            Find and book flights to hundreds of destinations worldwide at the
+            best prices
+          </p>
+        </div>
       </div>
 
-      <Card className="mb-12 border-none shadow-lg">
-        <CardContent className="p-6 mx-auto">
-          {isSearching ? <FlightResults /> : <FlightSearchForm />}
-        </CardContent>
-      </Card>
+      {/* Search box overlapping the hero section */}
+      <div className="container mx-auto px-4">
+        <Card className="mx-auto -mt-32 max-w-4xl shadow-lg">
+          <CardContent className="p-6">
+            <Tabs defaultValue="roundtrip">
+              <TabsList className="mb-6 grid w-full grid-cols-3">
+                <TabsTrigger value="roundtrip">Round Trip</TabsTrigger>
+                <TabsTrigger value="oneway">One Way</TabsTrigger>
+                <TabsTrigger value="multicity">Multi-City</TabsTrigger>
+              </TabsList>
+              <TabsContent value="roundtrip">
+                <FlightSearchForm roundTrip={true} />
+              </TabsContent>
+              <TabsContent value="oneway">
+                <FlightSearchForm roundTrip={false} />
+              </TabsContent>
+              <TabsContent value="multicity">
+                <div className="flex flex-col items-center justify-center p-8 text-center">
+                  <p className="text-lg text-muted-foreground">
+                    Multi-city booking coming soon!
+                  </p>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
 
-      {!isSearching && (
-        <>
-          <section className="mb-12">
-            <h2 className="text-2xl font-semibold mb-6">Popular Destinations</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {popularDestinations.map((destination) => (
-                <Card key={destination.city} className="overflow-hidden">
-                  <div className="relative h-48 w-full">
-                    <Image
-                      src={`/`}
-                      alt={destination.city}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <CardContent className="p-4">
-                    <h3 className="text-xl font-medium">{destination.city}</h3>
-                    <p className="text-muted-foreground">{destination.country}</p>
-                    <div className="mt-2 flex justify-between items-center">
-                      <span className="font-semibold">From ${destination.price}</span>
-                      <Button variant="outline" size="sm">Explore</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-6">Why Choose Us</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {features.map((feature) => (
-                <Card key={feature.title} className="text-center p-6">
-                  <div className="mx-auto mb-4 h-12 w-12 flex items-center justify-center rounded-full bg-primary/10">
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-xl font-medium mb-2">{feature.title}</h3>
-                  <p className="text-muted-foreground">{feature.description}</p>
-                </Card>
-              ))}
-            </div>
-          </section>
-        </>
-      )}
-    </main>
+      {/* Popular routes section */}
+      <div className="container mx-auto mt-12 px-4 py-8">
+        <h2 className="mb-6 text-2xl font-bold">Popular Routes</h2>
+        <PopularRoutes routes={popularRoutes} loading={loading} />
+      </div>
+    </div>
   );
 }
-
-const popularDestinations = [
-  { city: "New York", country: "United States", price: 299 },
-  { city: "Paris", country: "France", price: 349 },
-  { city: "Tokyo", country: "Japan", price: 499 },
-];
-
-const features = [
-  {
-    title: "Best Price Guarantee",
-    description: "We offer competitive prices on our 100+ destinations",
-    icon: "💰", // Would use actual Lucide icons in real implementation
-  },
-  {
-    title: "Easy Booking Process",
-    description: "Book your flight with just a few clicks",
-    icon: "✅",
-  },
-  {
-    title: "24/7 Customer Support",
-    description: "Our support team is always here to help",
-    icon: "🛟",
-  },
-];

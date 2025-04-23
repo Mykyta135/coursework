@@ -1,27 +1,37 @@
 // app/layout.tsx
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
+import { Inter } from "next/font/google";
+import type { Metadata } from "next";
 import { AuthProvider } from "@/provider/AuthProvider";
+import { Navbar } from "@/components/navbar";
+import { Toaster } from "sonner";
+import { ThemeProvider } from "next-themes";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Airway Booking System",
-  description: "Book flights to your favorite destinations",
+  title: "SkyJet - Book Your Next Flight",
+  description: "Find and book flights easily with SkyJet",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <AuthProvider>
+            <div className="flex flex-col min-h-screen">
+              <Navbar />
+              <main className="flex-1">{children}</main>
+              {/* <Footer /> */}
+            </div>
+            <Toaster />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
