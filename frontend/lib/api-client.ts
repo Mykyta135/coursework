@@ -1,6 +1,6 @@
 // lib/api-client.ts
 import { getAuthHeader } from "./auth-utils";
-import { Ticket, Passenger, Booking, Flight, Airport } from "@/app/types";
+import { Ticket, Passenger, Booking, Flight, Airport, User } from "@/app/types";
 
 const BASE_URL = "http://localhost:5005";
 
@@ -34,32 +34,60 @@ async function request<T>(
 
 // Authentication functions
 export const AuthAPI = {
-  login: async (email: string, password: string) => {
-    return request<{ token: string; user: any }>("users/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    });
-  },
-
-  register: async (email: string, password: string) => {
+  login: async (email: string, password: string): Promise<User> => {
     try {
-      const response = await fetch(`${BASE_URL}/users/register`, {
+      const response = await request<User>("users/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        console.error("Registration error:", errorData || response.statusText);
-        throw new Error(
-          errorData?.message || `Registration failed: ${response.status}`
-        );
+      // Store token and user data in localStorage
+      if (response && response.token) {
+        localStorage.setItem("token", response.token);
+
+        // Store user data - we need to extract the user object from the response
+        const userData = {
+          id: response.id,
+          email: response.email,
+          role: response.role,
+          isVerified: response.isVerified,
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+
+        console.log("Stored user data:", userData);
       }
 
-      return response.json();
+      return response;
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error;
+    }
+  },
+
+  register: async (email: string, password: string): Promise<User> => {
+    try {
+      const response = await request<User>("users/register", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+
+      // Store token and user data in localStorage
+      if (response && response.token) {
+        localStorage.setItem("token", response.token);
+
+        // Store user data
+        const userData = {
+          id: response.id,
+          email: response.email,
+          role: response.role,
+          isVerified: response.isVerified,
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+
+        console.log("Stored user data:", userData);
+      }
+
+      return response;
     } catch (error) {
       console.error("Registration error:", error);
       throw error;

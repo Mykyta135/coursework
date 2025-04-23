@@ -130,6 +130,7 @@ export enum UserRole {
     email: string;
     role: UserRole;
     isVerified: boolean;
+    token: string,
     passenger?: Passenger;
   }
   

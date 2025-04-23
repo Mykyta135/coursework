@@ -35,7 +35,7 @@ export default function LoginPage() {
       // Store the token in localStorage
       if (response.token) {
         localStorage.setItem("token", response.token);
-        localStorage.setItem("user", JSON.stringify(response.user));
+        localStorage.setItem("user", JSON.stringify(response));
         
         // Redirect to dashboard or home page
         router.push("/dashboard");

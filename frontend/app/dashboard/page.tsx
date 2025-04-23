@@ -17,10 +17,11 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      router.push("/login");
-      return;
-    }
+    // console.log(isLoggedIn)
+    // if (!isLoggedIn) {
+    //   router.push("/login");
+    //   return;
+    // }
 
     const fetchBookings = async () => {
       try {

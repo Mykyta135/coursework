@@ -1,9 +1,15 @@
 // providers/AuthProvider.tsx
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { isAuthenticated, getCurrentUser, logout } from '@/lib/auth-utils';
+import {
+  createContext,
+  useEffect,
+  useState,
+  ReactNode,
+  useContext,
+} from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { isAuthenticated, getCurrentUser, logout } from "@/lib/auth-utils";
 
 interface AuthContextType {
   user: any | null;
@@ -28,19 +34,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   // Public routes that don't require authentication
-  const publicRoutes = ['/login', '/register', '/', '/about'];
+  const publicRoutes = ["/login", "/register", "/", "/about"];
 
   useEffect(() => {
     const checkAuth = async () => {
+      // Check for authentication token
       const isLoggedIn = isAuthenticated();
+
       if (isLoggedIn) {
-        const userData = getCurrentUser();
-        setUser(userData);
+        try {
+          // Get user data from localStorage
+          const userData = getCurrentUser();
+
+          // Debug - check what's coming from localStorage
+          console.log("User data from localStorage:", userData);
+
+          if (userData) {
+            setUser(userData);
+          } else {
+            // If we have a token but no user data, something's wrong
+            console.error("Auth token exists but no user data found");
+            handleLogout(); // Clear invalid auth state
+          }
+        } catch (error) {
+          console.error("Error retrieving user data:", error);
+          handleLogout();
+        }
       } else {
         setUser(null);
         // Redirect to login if accessing a protected route
-        if (!publicRoutes.includes(pathname) && !pathname.startsWith('/auth')) {
-          router.push('/login');
+        if (!publicRoutes.includes(pathname) && !pathname.startsWith("/auth")) {
+          router.push("/login");
         }
       }
       setLoading(false);
@@ -52,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const handleLogout = () => {
     logout();
     setUser(null);
-    router.push('/login');
+    router.push("/login");
   };
 
   return (
