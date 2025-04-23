@@ -218,4 +218,8 @@ export const UserAPI = {
       body: JSON.stringify(profileData),
     });
   },
+
+  getUserProfile: async () => {
+    return request<{ user: User }>("users/profile");
+  },
 };

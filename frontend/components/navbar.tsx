@@ -40,40 +40,42 @@ export function Navbar() {
         <NavigationMenu className="hidden md:flex">
           <NavigationMenuList>
             <NavigationMenuItem>
-              <Link href="/" passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+            
+                <NavigationMenuLink href="/" className={navigationMenuTriggerStyle()}>
                   Home
                 </NavigationMenuLink>
-              </Link>
+              
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="/flights/search" passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+              
+                <NavigationMenuLink  href="/flights/search" className={navigationMenuTriggerStyle()}>
                   Find Flights
                 </NavigationMenuLink>
-              </Link>
+           
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuTrigger>Travel Info</NavigationMenuTrigger>
               <NavigationMenuContent>
                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                   <li>
-                    <NavigationMenuLink asChild>
+                   
                       <Link
                         href="/info/baggage"
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
-                        <div className="text-sm font-medium leading-none">
+                       
+                            <div className="text-sm font-medium leading-none">
                           Baggage
                         </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                           Baggage allowance and special requirements
                         </p>
+                     
                       </Link>
-                    </NavigationMenuLink>
+                  
                   </li>
                   <li>
-                    <NavigationMenuLink asChild>
+                  
                       <Link
                         href="/info/check-in"
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
@@ -85,7 +87,7 @@ export function Navbar() {
                           How to check-in for your flight
                         </p>
                       </Link>
-                    </NavigationMenuLink>
+                    
                   </li>
                 </ul>
               </NavigationMenuContent>
