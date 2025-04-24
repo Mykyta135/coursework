@@ -35,7 +35,9 @@ export enum UserRole {
     BOARDED = "BOARDED",
     COMPLETED = "COMPLETED",
     CANCELLED = "CANCELLED",
-    REFUNDED = "REFUNDED"
+    REFUNDED = "REFUNDED",
+    REFUND_REQUESTED = "REFUND_REQUESTED"
+
   }
   
   export enum PaymentMethod {
