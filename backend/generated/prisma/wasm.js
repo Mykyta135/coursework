@@ -183,8 +183,7 @@ exports.Prisma.UserScalarFieldEnum = {
   isVerified: 'isVerified',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  verificationToken: 'verificationToken',
-  verificationExpiry: 'verificationExpiry'
+  metadata: 'metadata'
 };
 
 exports.Prisma.BookingScalarFieldEnum = {
@@ -244,6 +243,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -252,6 +256,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.FlightStatus = exports.$Enums.FlightStatus = {
   SCHEDULED: 'SCHEDULED',

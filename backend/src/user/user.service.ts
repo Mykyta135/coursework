@@ -1,71 +1,83 @@
-// src/modules/users/users.service.ts
-import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
-import { JwtService } from 'src/jwt/jwt.service';
+// src/user/user.service.ts
+import { Injectable, NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
-export class UsersService {
-  constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
-  ) {}
+export class UserService {
+  constructor(private prisma: PrismaService) {}
 
-  async findAll() {
-    return this.prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        isVerified: true,
-        createdAt: true,
-        updatedAt: true,
-        passenger: true
-      }
-    });
-  }
-
-  async findOne(id: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        isVerified: true,
-        createdAt: true,
-        updatedAt: true,
-        passenger: true
-      }
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-
-    return user;
-  }
-
-  async create(data: any) {
-    // Check if user with email already exists
+  async register(data: any) {
+    // Check if user already exists
     const existingUser = await this.prisma.user.findUnique({
       where: { email: data.email }
     });
-
+    
     if (existingUser) {
-      throw new ConflictException(`User with email ${data.email} already exists`);
+      throw new BadRequestException('Email already registered');
     }
-
-    // Hash the password
-    const passwordHash = await this.hashPassword(data.password);
-
-    // Create the user
-    return this.prisma.user.create({
+    
+    // Hash password
+    const passwordHash = await bcrypt.hash(data.password, 10);
+    
+    // Create user
+    const user = await this.prisma.user.create({
       data: {
         email: data.email,
         passwordHash,
-        role: data.role || 'CUSTOMER'
-      },
+        role: data.role || 'CUSTOMER',
+        verificationToken: Math.random().toString(36).substring(2, 12),
+        verificationExpiry: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+      }
+    });
+    
+    // Generate JWT token
+    const token = this.generateToken(user);
+    
+    // Return user data and token
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      isVerified: user.isVerified,
+      token
+    };
+  }
+
+  async login(email: string, password: string) {
+    // Find user
+    const user = await this.prisma.user.findUnique({
+      where: { email }
+    });
+    
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    
+    // Check password
+    const passwordValid = await bcrypt.compare(password, user.passwordHash);
+    
+    if (!passwordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    
+    // Generate JWT token
+    const token = this.generateToken(user);
+    
+    // Return user data and token
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      isVerified: user.isVerified,
+      token
+    };
+  }
+
+  async findById(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
       select: {
         id: true,
         email: true,
@@ -75,218 +87,134 @@ export class UsersService {
         updatedAt: true
       }
     });
-  }
-
-  async update(id: string, data: any) {
-    // Check if user exists
-    const user = await this.prisma.user.findUnique({
-      where: { id }
-    });
-
+    
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
+    
+    return { user };
+  }
 
-    // If email is being changed, check for conflicts
-    if (data.email && data.email !== user.email) {
-      const existingUser = await this.prisma.user.findUnique({
-        where: { email: data.email }
-      });
-
-      if (existingUser) {
-        throw new ConflictException(`User with email ${data.email} already exists`);
-      }
-    }
-
-    // Prepare update data
-    const updateData: any = {
-      email: data.email,
-      role: data.role,
-      isVerified: data.isVerified
-    };
-
-    // Hash the new password if provided
-    if (data.password) {
-      updateData.passwordHash = await this.hashPassword(data.password);
-    }
-
-    // Update the user
-    return this.prisma.user.update({
-      where: { id },
-      data: updateData,
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        isVerified: true,
-        createdAt: true,
-        updatedAt: true,
+  async getUserWithPassenger(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
         passenger: true
       }
     });
+    
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+    
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        isVerified: user.isVerified,
+        passenger: user.passenger
+      }
+    };
   }
 
-  async remove(id: string) {
-    // Check if user exists
+  async updateProfile(userId: string, data: any) {
+    // First check if user exists
     const user = await this.prisma.user.findUnique({
-      where: { id },
+      where: { id: userId },
       include: {
-        bookings: true
+        passenger: true
       }
     });
-
+    
     if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(`User with ID ${userId} not found`);
     }
-
-    // Check if user has any bookings
-    if (user.bookings.length > 0) {
-      throw new BadRequestException(`Cannot delete user with existing bookings`);
+    
+    if (user.passenger) {
+      // Update existing passenger
+      return this.prisma.passenger.update({
+        where: { userId },
+        data
+      });
+    } else {
+      // Create new passenger
+      return this.prisma.passenger.create({
+        data: {
+          ...data,
+          userId
+        }
+      });
     }
-
-    // Delete the user
-    return this.prisma.user.delete({
-      where: { id },
-      select: {
-        id: true,
-        email: true,
-        role: true
-      }
-    });
   }
-  
-  async getUserBookings(id: string) {
-    // Check if user exists
-    const user = await this.prisma.user.findUnique({
-      where: { id }
-    });
 
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-
-    // Get user's bookings
+  async getUserBookings(userId: string) {
     return this.prisma.booking.findMany({
-      where: { userId: id },
+      where: { userId },
       include: {
         flight: {
           include: {
-            airline: true,
             departureAirport: true,
-            arrivalAirport: true
+            arrivalAirport: true,
+            airline: true
           }
         },
-        tickets: {
+        passengers: {
           include: {
-            passenger: true,
-            flightSeat: true
+            passenger: true
           }
         },
-        payments: true
-      }
-    });
-  }
-  
-  async login(credentials: { email: string; password: string }) {
-    // Find user by email
-    const user = await this.prisma.user.findUnique({
-      where: { email: credentials.email }
-    });
-  
-    if (!user) {
-      throw new BadRequestException('Invalid email or password');
-    }
-  
-    // Verify password
-    const passwordValid = await bcrypt.compare(credentials.password, user.passwordHash);
-  
-    if (!passwordValid) {
-      throw new BadRequestException('Invalid email or password');
-    }
-  
-    // Generate JWT token
-    const token = this.jwtService.generateToken({
-      sub: user.id,
-      email: user.email,
-      role: user.role
-    });
-  
-    return {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      isVerified: user.isVerified,
-      token
-    };
-  }
-  
-  async register(data: any) {
-    // Check if user already exists
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email: data.email }
-    });
-
-    if (existingUser) {
-      throw new ConflictException(`User with email ${data.email} already exists`);
-    }
-
-    // Hash the password
-    const passwordHash = await this.hashPassword(data.password);
-
-    // Create a new user
-    const user = await this.prisma.user.create({
-      data: {
-        email: data.email,
-        passwordHash,
-        role: 'CUSTOMER', // Default role for new registrations
-        isVerified: false // User needs to verify email
-      }
-    });
-
-    // In a real application, you would send a verification email here
-
-    const token = this.jwtService.generateToken({
-      sub: user.id,
-      email: user.email,
-      role: user.role
-    });
-  
-    return {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      isVerified: user.isVerified,
-      token
-    };
-  }
-  
-  async verifyUser(id: string) {
-    // Check if user exists
-    const user = await this.prisma.user.findUnique({
-      where: { id }
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-
-    // Mark user as verified
-    return this.prisma.user.update({
-      where: { id },
-      data: {
-        isVerified: true
+        tickets: true
       },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        isVerified: true
+      orderBy: {
+        bookingDate: 'desc'
       }
     });
   }
-  
-  private async hashPassword(password: string): Promise<string> {
-    const saltRounds = 10;
-    return bcrypt.hash(password, saltRounds);
+
+  async getUserTickets(userId: string) {
+    // First get the passenger ID for this user
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { passenger: true }
+    });
+    
+    if (!user || !user.passenger) {
+      return [];
+    }
+    
+    return this.prisma.ticket.findMany({
+      where: { passengerId: user.passenger.id },
+      include: {
+        booking: {
+          include: {
+            flight: {
+              include: {
+                departureAirport: true,
+                arrivalAirport: true,
+                airline: true
+              }
+            }
+          }
+        },
+        flightSeat: true,
+        refund: true
+      },
+      orderBy: {
+        issueDate: 'desc'
+      }
+    });
+  }
+
+  private generateToken(user: any) {
+    const payload = {
+      id: user.id,
+      email: user.email,
+      role: user.role
+    };
+    
+    return jwt.sign(payload, process.env.JWT_SECRET as string, {
+      expiresIn: '24h'
+    });
   }
 }

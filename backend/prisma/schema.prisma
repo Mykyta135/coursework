@@ -115,10 +115,10 @@ model User {
   isVerified      Boolean   @default(false)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-  
-  verificationToken  String?
+
   verificationExpiry DateTime?
-  // Relationships
+  verificationToken String?
+ 
   passenger       Passenger?
   bookings        Booking[]
 }

@@ -1,48 +1,43 @@
-// src/modules/tickets/tickets.controller.ts
-import { Controller, Get, Post, Put, Delete, Body, Param, UsePipes } from '@nestjs/common';
+// src/ticket/ticket.controller.ts
+import { Controller, Get, Post, Param, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
+import { JwtAuthGuard } from 'src/jwt/jwt-auth.guard';
+import { TicketService } from './ticket.service';
 
-import { TicketSchema } from '../../schemas/validation';
-import { TicketsService } from './ticket.service';
-import { ZodValidationPipe } from 'src/pipes/zod-validation-pipe';
 
 @Controller('tickets')
-export class TicketsController {
-  constructor(private readonly ticketsService: TicketsService) {}
+export class TicketController {
+  constructor(private readonly ticketService: TicketService) {}
 
-  @Get()
-  async findAll() {
-    return this.ticketsService.findAll();
-  }
-
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.ticketsService.findOne(id);
+  async getById(@Param('id') id: string) {
+    return this.ticketService.findById(id);
   }
 
-  @Post()
-  @UsePipes(new ZodValidationPipe(TicketSchema))
-  async create(@Body() data: any) {
-    return this.ticketsService.create(data);
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/download')
+  async downloadTicket(@Param('id') id: string, @Res() res: Response) {
+    const pdfBuffer = await this.ticketService.generateTicketPdf(id);
+    
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="ticket-${id}.pdf"`,
+      'Content-Length': pdfBuffer.length,
+    });
+    
+    res.end(pdfBuffer);
   }
 
-  @Put(':id')
-  @UsePipes(new ZodValidationPipe(TicketSchema))
-  async update(@Param('id') id: string, @Body() data: any) {
-    return this.ticketsService.update(id, data);
-  }
-  
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.ticketsService.remove(id);
-  }
-  
-  @Post(':id/generate-boarding-pass')
-  async generateBoardingPass(@Param('id') id: string) {
-    return this.ticketsService.generateBoardingPass(id);
-  }
-  
+  @UseGuards(JwtAuthGuard)
   @Post(':id/check-in')
   async checkIn(@Param('id') id: string) {
-    return this.ticketsService.checkIn(id);
+    return this.ticketService.checkIn(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/refund')
+  async requestRefund(@Param('id') id: string) {
+    return this.ticketService.requestRefund(id);
   }
 }

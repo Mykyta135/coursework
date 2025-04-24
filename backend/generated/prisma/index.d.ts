@@ -8004,8 +8004,6 @@ export namespace Prisma {
     isVerified: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
-    verificationToken: string | null
-    verificationExpiry: Date | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -8016,8 +8014,6 @@ export namespace Prisma {
     isVerified: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
-    verificationToken: string | null
-    verificationExpiry: Date | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -8028,8 +8024,7 @@ export namespace Prisma {
     isVerified: number
     createdAt: number
     updatedAt: number
-    verificationToken: number
-    verificationExpiry: number
+    metadata: number
     _all: number
   }
 
@@ -8042,8 +8037,6 @@ export namespace Prisma {
     isVerified?: true
     createdAt?: true
     updatedAt?: true
-    verificationToken?: true
-    verificationExpiry?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -8054,8 +8047,6 @@ export namespace Prisma {
     isVerified?: true
     createdAt?: true
     updatedAt?: true
-    verificationToken?: true
-    verificationExpiry?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -8066,8 +8057,7 @@ export namespace Prisma {
     isVerified?: true
     createdAt?: true
     updatedAt?: true
-    verificationToken?: true
-    verificationExpiry?: true
+    metadata?: true
     _all?: true
   }
 
@@ -8151,8 +8141,7 @@ export namespace Prisma {
     isVerified: boolean
     createdAt: Date
     updatedAt: Date
-    verificationToken: string | null
-    verificationExpiry: Date | null
+    metadata: JsonValue | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -8180,8 +8169,7 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    verificationToken?: boolean
-    verificationExpiry?: boolean
+    metadata?: boolean
     passenger?: boolean | User$passengerArgs<ExtArgs>
     bookings?: boolean | User$bookingsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -8195,8 +8183,7 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    verificationToken?: boolean
-    verificationExpiry?: boolean
+    metadata?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -8207,8 +8194,7 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    verificationToken?: boolean
-    verificationExpiry?: boolean
+    metadata?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -8219,11 +8205,10 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    verificationToken?: boolean
-    verificationExpiry?: boolean
+    metadata?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "passwordHash" | "role" | "isVerified" | "createdAt" | "updatedAt" | "verificationToken" | "verificationExpiry", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "passwordHash" | "role" | "isVerified" | "createdAt" | "updatedAt" | "metadata", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     passenger?: boolean | User$passengerArgs<ExtArgs>
     bookings?: boolean | User$bookingsArgs<ExtArgs>
@@ -8246,8 +8231,7 @@ export namespace Prisma {
       isVerified: boolean
       createdAt: Date
       updatedAt: Date
-      verificationToken: string | null
-      verificationExpiry: Date | null
+      metadata: Prisma.JsonValue | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -8680,8 +8664,7 @@ export namespace Prisma {
     readonly isVerified: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
-    readonly verificationToken: FieldRef<"User", 'String'>
-    readonly verificationExpiry: FieldRef<"User", 'DateTime'>
+    readonly metadata: FieldRef<"User", 'Json'>
   }
     
 
@@ -14915,8 +14898,7 @@ export namespace Prisma {
     isVerified: 'isVerified',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    verificationToken: 'verificationToken',
-    verificationExpiry: 'verificationExpiry'
+    metadata: 'metadata'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -14997,6 +14979,14 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
@@ -15011,6 +15001,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -15106,6 +15105,20 @@ export namespace Prisma {
    * Reference to a field of type 'UserRole[]'
    */
   export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -15602,8 +15615,7 @@ export namespace Prisma {
     isVerified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    verificationToken?: StringNullableFilter<"User"> | string | null
-    verificationExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
+    metadata?: JsonNullableFilter<"User">
     passenger?: XOR<PassengerNullableScalarRelationFilter, PassengerWhereInput> | null
     bookings?: BookingListRelationFilter
   }
@@ -15616,8 +15628,7 @@ export namespace Prisma {
     isVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    verificationToken?: SortOrderInput | SortOrder
-    verificationExpiry?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
     passenger?: PassengerOrderByWithRelationInput
     bookings?: BookingOrderByRelationAggregateInput
   }
@@ -15633,8 +15644,7 @@ export namespace Prisma {
     isVerified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    verificationToken?: StringNullableFilter<"User"> | string | null
-    verificationExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
+    metadata?: JsonNullableFilter<"User">
     passenger?: XOR<PassengerNullableScalarRelationFilter, PassengerWhereInput> | null
     bookings?: BookingListRelationFilter
   }, "id" | "email">
@@ -15647,8 +15657,7 @@ export namespace Prisma {
     isVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    verificationToken?: SortOrderInput | SortOrder
-    verificationExpiry?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -15665,8 +15674,7 @@ export namespace Prisma {
     isVerified?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
-    verificationToken?: StringNullableWithAggregatesFilter<"User"> | string | null
-    verificationExpiry?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    metadata?: JsonNullableWithAggregatesFilter<"User">
   }
 
   export type BookingWhereInput = {
@@ -16476,8 +16484,7 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    verificationToken?: string | null
-    verificationExpiry?: Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     passenger?: PassengerCreateNestedOneWithoutUserInput
     bookings?: BookingCreateNestedManyWithoutUserInput
   }
@@ -16490,8 +16497,7 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    verificationToken?: string | null
-    verificationExpiry?: Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     passenger?: PassengerUncheckedCreateNestedOneWithoutUserInput
     bookings?: BookingUncheckedCreateNestedManyWithoutUserInput
   }
@@ -16504,8 +16510,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
-    verificationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     passenger?: PassengerUpdateOneWithoutUserNestedInput
     bookings?: BookingUpdateManyWithoutUserNestedInput
   }
@@ -16518,8 +16523,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
-    verificationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     passenger?: PassengerUncheckedUpdateOneWithoutUserNestedInput
     bookings?: BookingUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -16532,8 +16536,7 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    verificationToken?: string | null
-    verificationExpiry?: Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type UserUpdateManyMutationInput = {
@@ -16544,8 +16547,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
-    verificationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -16556,8 +16558,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
-    verificationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BookingCreateInput = {
@@ -17402,6 +17403,29 @@ export namespace Prisma {
     notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
     not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
   }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type PassengerNullableScalarRelationFilter = {
     is?: PassengerWhereInput | null
@@ -17416,8 +17440,7 @@ export namespace Prisma {
     isVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    verificationToken?: SortOrder
-    verificationExpiry?: SortOrder
+    metadata?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -17428,8 +17451,6 @@ export namespace Prisma {
     isVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    verificationToken?: SortOrder
-    verificationExpiry?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -17440,8 +17461,6 @@ export namespace Prisma {
     isVerified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    verificationToken?: SortOrder
-    verificationExpiry?: SortOrder
   }
 
   export type EnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
@@ -17452,6 +17471,32 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumUserRoleFilter<$PrismaModel>
     _max?: NestedEnumUserRoleFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type EnumBookingStatusFilter<$PrismaModel = never> = {
@@ -18814,6 +18859,29 @@ export namespace Prisma {
     _min?: NestedEnumUserRoleFilter<$PrismaModel>
     _max?: NestedEnumUserRoleFilter<$PrismaModel>
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedEnumBookingStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.BookingStatus | EnumBookingStatusFieldRefInput<$PrismaModel>
@@ -19546,8 +19614,7 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    verificationToken?: string | null
-    verificationExpiry?: Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     bookings?: BookingCreateNestedManyWithoutUserInput
   }
 
@@ -19559,8 +19626,7 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    verificationToken?: string | null
-    verificationExpiry?: Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     bookings?: BookingUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -19646,8 +19712,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
-    verificationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     bookings?: BookingUpdateManyWithoutUserNestedInput
   }
 
@@ -19659,8 +19724,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
-    verificationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     bookings?: BookingUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -19844,8 +19908,7 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    verificationToken?: string | null
-    verificationExpiry?: Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     passenger?: PassengerCreateNestedOneWithoutUserInput
   }
 
@@ -19857,8 +19920,7 @@ export namespace Prisma {
     isVerified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    verificationToken?: string | null
-    verificationExpiry?: Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     passenger?: PassengerUncheckedCreateNestedOneWithoutUserInput
   }
 
@@ -20007,8 +20069,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
-    verificationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     passenger?: PassengerUpdateOneWithoutUserNestedInput
   }
 
@@ -20020,8 +20081,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
-    verificationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
     passenger?: PassengerUncheckedUpdateOneWithoutUserNestedInput
   }
 

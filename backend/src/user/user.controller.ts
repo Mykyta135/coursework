@@ -1,58 +1,55 @@
-// src/modules/users/users.controller.ts
-import { Controller, Get, Post, Put, Delete, Body, Param, UsePipes } from '@nestjs/common';
-import { UserSchema } from '../../schemas/validation';
-import { UsersService } from './user.service';
+// src/user/user.controller.ts
+import { Controller, Get, Post, Put, Body, UseGuards, Request } from '@nestjs/common';
+
 import { ZodValidationPipe } from 'src/pipes/zod-validation-pipe';
+import { UserSchema, PassengerSchema } from '../../schemas/validation';
+import { JwtAuthGuard } from 'src/jwt/jwt-auth.guard';
+import { UserService } from './user.service';
 
 @Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+export class UserController {
+  constructor(private readonly userService: UserService) {}
 
-  @Get()
-  async findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
-  }
-
-  @Post()
-  @UsePipes(new ZodValidationPipe(UserSchema))
-  async create(@Body() data: any) {
-    return this.usersService.create(data);
-  }
-
-  @Put(':id')
-  @UsePipes(new ZodValidationPipe(UserSchema))
-  async update(@Param('id') id: string, @Body() data: any) {
-    return this.usersService.update(id, data);
-  }
-
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
-  }
-  
-  @Get(':id/bookings')
-  async getUserBookings(@Param('id') id: string) {
-    return this.usersService.getUserBookings(id);
-  }
-  
-  @Post('login')
-  async login(@Body() credentials: { email: string; password: string }) {
-    return this.usersService.login(credentials);
-  }
-  
   @Post('register')
-  @UsePipes(new ZodValidationPipe(UserSchema))
-  async register(@Body() data: any) {
-    return this.usersService.register(data);
+  async register(@Body(new ZodValidationPipe(UserSchema)) data: any) {
+    return this.userService.register(data);
   }
-  
-  @Post(':id/verify')
-  async verifyUser(@Param('id') id: string) {
-    return this.usersService.verifyUser(id);
+
+  @Post('login')
+  async login(@Body() data: { email: string; password: string }) {
+    return this.userService.login(data.email, data.password);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async getProfile(@Request() req) {
+    return this.userService.findById(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async getUserProfile(@Request() req) {
+    return this.userService.getUserWithPassenger(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('profile')
+  async updateProfile(
+    @Request() req,
+    @Body(new ZodValidationPipe(PassengerSchema)) data: any
+  ) {
+    return this.userService.updateProfile(req.user.id, data);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('bookings')
+  async getUserBookings(@Request() req) {
+    return this.userService.getUserBookings(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('tickets')
+  async getUserTickets(@Request() req) {
+    return this.userService.getUserTickets(req.user.id);
   }
 }
